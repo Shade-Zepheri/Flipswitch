@@ -366,11 +366,11 @@ typedef struct {
 @end
 
 typedef NS_ENUM(NSUInteger, BluetoothState) {
-    BluetoothStateUnavailable,
-    BluetoothStatePowerOff,
+	BluetoothStateUnavailable,
+	BluetoothStatePowerOff,
 	BluetoothStateDisconnected,
 	BluetoothStateConnected,
-    BluetoothStateBusy
+	BluetoothStateBusy
 };
 
 @interface BluetoothManager
