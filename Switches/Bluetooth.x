@@ -44,12 +44,7 @@ static BluetoothManager *mrManager;
 {
     if ([mrManager respondsToSelector:@selector(bluetoothState)]) {
         // iOS 11 <
-        BluetoothState state = [mrManager bluetoothState];
-        if (state == BluetoothStateConnected || BluetoothStateDisconnected) {
-            return FSSwitchStateOn;
-        } else if (state == BluetoothStatePowerOff) {
-            return FSSwitchStateOff;
-        }
+        return [mrManager powerState] == 2;
     } else {
         // iOS 10 >
         return [mrManager powered];
