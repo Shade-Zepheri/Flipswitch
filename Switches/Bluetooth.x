@@ -58,9 +58,9 @@ static BluetoothManager *mrManager;
 
 - (void)applyState:(FSSwitchState)newState forSwitchIdentifier:(NSString *)switchIdentifier
 {
-	if (newState == FSSwitchStateIndeterminate)
-		return;
-	state = newState;
+    if (newState == FSSwitchStateIndeterminate)
+        return;
+    state = newState;
 
     [mrManager setPowered:newState];
     [mrManager setEnabled:newState];
