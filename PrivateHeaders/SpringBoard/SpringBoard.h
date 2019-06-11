@@ -365,11 +365,21 @@ typedef struct {
 - (void)setStatusNotificationBlock:(void (^)(CBBlueLightStatus *))callback;
 @end
 
+typedef NS_ENUM(NSUInteger, BluetoothState) {
+    BluetoothStateUnavailable,
+    BluetoothStatePowerOff,
+	BluetoothStateDisconnected,
+	BluetoothStateConnected,
+    BluetoothStateBusy
+};
+
 @interface BluetoothManager
 + (BluetoothManager *)sharedInstance;
 - (BOOL)powered;
 - (BOOL)setPowered:(BOOL)powered;
 - (void)setEnabled:(BOOL)enabled;
+- (BluetoothState)bluetoothState;
+- (void)bluetoothStateActionWithCompletion:(id)completion;
 @end
 
 @interface RPControlCenterClient : NSObject

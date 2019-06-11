@@ -8,6 +8,7 @@
 @end
 
 static FSSwitchState state;
+static BluetoothManager *mrManager;
 
 @implementation BluetoothSwitch
 
@@ -15,7 +16,11 @@ static FSSwitchState state;
 {
     if ((self = [super init])) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_bluetoothStateDidChange:) name:@"BluetoothPowerChangedNotification" object:nil];
-        state = [[%c(BluetoothManager) sharedInstance] powered];
+        // iOS 11+
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_bluetoothStateDidChange:) name:@"BluetoothStateChangedNotification" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_bluetoothStateDidChange:) name:@"BluetoothConnectionStatusChangedNotification" object:nil];
+
+        mrManager = [%c(BluetoothManager) sharedInstance];
     }
 
     return self;
@@ -30,7 +35,6 @@ static FSSwitchState state;
 
 - (void)_bluetoothStateDidChange:(NSNotification *)notification
 {
-    state = [[%c(BluetoothManager) sharedInstance] powered];
     [[FSSwitchPanel sharedPanel] stateDidChangeForSwitchIdentifier:@"com.a3tweaks.switch.bluetooth"];
 }
 
@@ -38,7 +42,18 @@ static FSSwitchState state;
 
 - (FSSwitchState)stateForSwitchIdentifier:(NSString *)switchIdentifier
 {
-	return state;
+    if ([mrManager respondsToSelector:@selector(bluetoothState)]) {
+        // iOS 11 <
+        BluetoothState state = [mrManager bluetoothState];
+        if (state == BluetoothStateConnected || BluetoothStateDisconnected) {
+            return FSSwitchStateOn;
+        } else if (state == BluetoothStatePowerOff) {
+            return FSSwitchStateOff;
+        }
+    } else {
+        // iOS 10 >
+        return [mrManager powered];
+    }
 }
 
 - (void)applyState:(FSSwitchState)newState forSwitchIdentifier:(NSString *)switchIdentifier
@@ -46,9 +61,9 @@ static FSSwitchState state;
 	if (newState == FSSwitchStateIndeterminate)
 		return;
 	state = newState;
-	BluetoothManager *mrManager = [%c(BluetoothManager) sharedInstance];
-	[mrManager setPowered:newState];
-	[mrManager setEnabled:newState];
+
+    [mrManager setPowered:newState];
+    [mrManager setEnabled:newState];
 }
 
 @end
